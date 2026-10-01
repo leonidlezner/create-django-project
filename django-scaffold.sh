@@ -6,13 +6,13 @@ if ! command -v uv &> /dev/null; then
     exit 1
 fi
 
-# Check if project name is provided as an argument
+# Prompt for project name if not provided as an argument
 if [ -z "$1" ]; then
-  echo "Usage: $0 <project_name>"
-  exit 1
+  read -p "Enter the project name: " PROJECT_NAME
+else
+  PROJECT_NAME=$1
 fi
 
-PROJECT_NAME=$1
 SETTINGS_FILE="$PROJECT_NAME/settings.py"
 URLS_FILE="$PROJECT_NAME/urls.py"
 
