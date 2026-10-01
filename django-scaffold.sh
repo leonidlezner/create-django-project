@@ -16,6 +16,9 @@ PROJECT_NAME=$1
 SETTINGS_FILE="$PROJECT_NAME/settings.py"
 URLS_FILE="$PROJECT_NAME/urls.py"
 
+mkdir -p "$PROJECT_NAME"
+cd "$PROJECT_NAME"
+
 uv init .
 
 rm -rf main.py
