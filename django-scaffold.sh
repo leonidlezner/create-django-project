@@ -54,7 +54,8 @@ sed -i '' "s|'DIRS': \[\]|'DIRS': [BASE_DIR / 'templates']|" "$SETTINGS_FILE"
 sed -i '' "/^STATIC_URL = /a\\
 STATIC_ROOT = BASE_DIR / 'static'\\
 STATICFILES_DIRS = [BASE_DIR / 'assets']\\
-TAILWIND_CLI_SRC_CSS = BASE_DIR / 'src' / 'styles' / 'main.css'
+TAILWIND_CLI_SRC_CSS = BASE_DIR / 'src' / 'styles' / 'main.css'\\
+# TAILWIND_CLI_USE_DAISY_UI = True
 " "$SETTINGS_FILE"
 
 # Add STORAGES setting at the end of the file
