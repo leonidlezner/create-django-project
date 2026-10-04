@@ -22,7 +22,7 @@ Uncomment `TAILWIND_CLI_USE_DAISY_UI`in settings.py.
 
 ### Running tests in VSCode
 
-Add an .env file with following content:
+Add to .env file:
 
 ```
 MANAGE_PY_PATH="./manage.py"
