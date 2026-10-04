@@ -69,18 +69,19 @@ STORAGES = {
     },
 }
 
-INTERNAL_IPS = [
-    "127.0.0.1",
-]
+if DEBUG:
+    INTERNAL_IPS = [
+        "127.0.0.1",
+    ]
 
 EOL
 
 # Add "include" to the import
 sed -i '' 's|from django.urls import path|from django.urls import path, include|' "$URLS_FILE"
 
-# Import debug_toolbar_urls
+# Import settings
 sed -i '' "/^from django.urls import path, include/a\\
-from debug_toolbar.toolbar import debug_toolbar_urls
+from django.conf import settings
 " "$URLS_FILE"
 
 # Add django_browser_reload to urlpatterns
@@ -89,7 +90,12 @@ sed -i '' "/^urlpatterns = \[/a\\
 " "$URLS_FILE"
 
 # Add debug_toolbar_urls to urlpatterns
-sed -i '' 's|^]|] + debug_toolbar_urls()|' "$URLS_FILE"
+cat <<EOL >> "$URLS_FILE"
+
+if settings.DEBUG:
+    from debug_toolbar.toolbar import debug_toolbar_urls
+    urlpatterns = urlpatterns + debug_toolbar_urls()
+EOL
 
 # Create necessary directories for assets, templates, static files, and styles
 mkdir -p assets
