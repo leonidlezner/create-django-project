@@ -55,6 +55,9 @@ sed -i '' 's|^ALLOWED_HOSTS = .*|ALLOWED_HOSTS = env("ALLOWED_HOSTS")|' "$SETTIN
 # Configure the database from DATABASE_URL (defaults to local sqlite)
 perl -0pi -e 's/DATABASES = \{.*?\n\}\n/DATABASES = {\n    "default": env.db(default=f"sqlite:\/\/\/{BASE_DIR \/ '"'"'db.sqlite3'"'"'}"),\n}\n/s' "$SETTINGS_FILE"
 
+
+# --- Adding applications and middlewares ---
+
 # Add apps to INSTALLED_APPS around 'django.contrib.staticfiles'
 sed -i '' "/'django.contrib.staticfiles',/i\\
     'whitenoise.runserver_nostatic',
@@ -130,6 +133,9 @@ mkdir -p assets
 mkdir -p templates
 mkdir -p static
 mkdir -p src/styles
+
+
+# --- Creating additionals files ---
 
 # Create base.html
 cat <<EOL > templates/base.html
