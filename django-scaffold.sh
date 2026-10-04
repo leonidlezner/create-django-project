@@ -23,7 +23,7 @@ uv init .
 
 rm -rf main.py
 
-uv add django django-tailwind-cli whitenoise django-browser-reload
+uv add django django-tailwind-cli whitenoise django-browser-reload django-debug-toolbar
 
 uv run django-admin startproject "$PROJECT_NAME" .
 
@@ -34,7 +34,8 @@ sed -i '' "/'django.contrib.staticfiles',/i\\
 
 sed -i '' "/'django.contrib.staticfiles',/a\\
     'django_tailwind_cli',\\
-    'django_browser_reload',
+    'django_browser_reload',\\
+    'debug_toolbar',
 " "$SETTINGS_FILE"
 
 # Add WhiteNoise middleware after SecurityMiddleware
@@ -44,7 +45,8 @@ sed -i '' "/'django.middleware.security.SecurityMiddleware',/a\\
 
 # Add BrowserReload middleware after XFrameOptionsMiddleware
 sed -i '' "/'django.middleware.clickjacking.XFrameOptionsMiddleware',/a\\
-    'django_browser_reload.middleware.BrowserReloadMiddleware',
+    'django_browser_reload.middleware.BrowserReloadMiddleware',\\
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 " "$SETTINGS_FILE"
 
 # Add templates dir to TEMPLATES DIRS
@@ -66,16 +68,30 @@ STORAGES = {
         'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
     },
 }
+
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
+
 EOL
 
-# Adjust urls.py to wire up django_browser_reload
-
+# Add "include" to the import
 sed -i '' 's|from django.urls import path|from django.urls import path, include|' "$URLS_FILE"
 
+# Import debug_toolbar_urls
+sed -i '' "/^from django.urls import path, include/a\\
+from debug_toolbar.toolbar import debug_toolbar_urls
+" "$URLS_FILE"
+
+# Add django_browser_reload to urlpatterns
 sed -i '' "/^urlpatterns = \[/a\\
     path('__reload__/', include('django_browser_reload.urls')),
 " "$URLS_FILE"
 
+# Add debug_toolbar_urls to urlpatterns
+sed -i '' 's|^]|] + debug_toolbar_urls()|' "$URLS_FILE"
+
+# Create necessary directories for assets, templates, static files, and styles
 mkdir -p assets
 mkdir -p templates
 mkdir -p static
@@ -93,12 +109,16 @@ cat <<EOL > templates/base.html
     {% tailwind_css %}
 </head>
 <body>
-    {% block content %}{% endblock %}
+    {% block main_content %}{% endblock %}
 </body>
 </html>
 EOL
 
 cat <<EOL > src/styles/main.css
 @import "tailwindcss";
+
+/*@plugin "daisyui" {
+  themes: light --default, dark --prefersdark;
+}*/
 EOL
 

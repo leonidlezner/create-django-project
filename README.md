@@ -27,3 +27,28 @@ Add an .env file with following content:
 ```
 MANAGE_PY_PATH="./manage.py"
 ```
+
+## Adding allauth to the project
+
+tbd.
+
+### Creating random username for allauth
+
+Create `adapter.py` in the App APPNAME with following code:
+
+```python
+import uuid
+from allauth.account.adapter import DefaultAccountAdapter
+
+class RandomUsernameAdapter(DefaultAccountAdapter):
+    def generate_unique_username(self, txts, regex=None):
+        random_base = uuid.uuid4()
+        return super().generate_unique_username([random_base], regex)
+
+```
+
+And configure it in settings.py:
+
+```python
+ACCOUNT_ADAPTER = "APPNAME.adapter.RandomUsernameAdapter"
+```
